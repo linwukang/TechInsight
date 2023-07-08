@@ -22,9 +22,9 @@ public class UserAccountDeleted
     [Column("uad_id")]
     public int Id { get; set; }
 
-    [Required]
+    /*[Required]
     [ForeignKey("uad_user_account_id")]
-    public UserAccount UserAccount { get; set; }
+    public UserAccount UserAccount { get; set; }*/
 
     [Required]
     [Column("uad_delete_time")]
@@ -35,5 +35,6 @@ public class UserAccountDeleted
     public UserAccount Operator { get; set; }
 
     [Column("uad_delete_reasons")]
+    [MaxLength(1024)]
     public string? DeleteReasons { get; set; }
 }

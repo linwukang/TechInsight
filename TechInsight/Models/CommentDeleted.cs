@@ -22,9 +22,9 @@ public class CommentDeleted
     [Column("cd_id")]
     public int Id { get; set; }
 
-    [Required]
+    /*[Required]
     [ForeignKey("cd_comment_id")]
-    public Comment Comment { get; set; }
+    public Comment Comment { get; set; }*/
 
     [Required]
     [Column("cd_delete_time")]
@@ -35,5 +35,6 @@ public class CommentDeleted
     public UserAccount Operator { get; set; }
 
     [Column("cd_delete_reasons")]
+    [MaxLength(1024)]
     public string? DeleteReasons { get; set; }
 }

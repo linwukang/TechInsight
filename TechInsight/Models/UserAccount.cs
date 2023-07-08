@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using TechInsight.Models.Types;
 
 namespace TechInsight.Models;
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -61,9 +62,13 @@ public class UserAccount
      * 账号状态
      * </summary>
      */
-    [Required]
+    /*[Required]
     [Column("ua_state")]
-    public string State { get; set; }
+    public string State { get; set; }*/
+
+    [Required]
+    [Column("ua_role")]
+    public UserRole Role { get; set; }
 
     /**
      * <summary>
@@ -88,7 +93,7 @@ public class UserAccount
      * null 值则表示未删除
      * </summary>
      */
-    [Column("ua_deleted_id")]
+    [ForeignKey("ua_deleted_id")]
     public UserAccountDeleted? IsDeleted { get; set; }
 
     

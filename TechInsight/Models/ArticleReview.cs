@@ -56,6 +56,7 @@ public class ArticleReview
      * </summary>
      */
     [Column("are_not_approved_reasons")]
+    [MaxLength(1024)]
     public string? NotApprovedReasons { get; set; }
 
     /**

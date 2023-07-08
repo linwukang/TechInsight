@@ -29,15 +29,38 @@ public class Comment
     [Column("co_publication_date")]
     public DateTime PublicationDate { get; set; } = DateTime.Now;
 
+    [ForeignKey("co_reply_comment_id")]
+    public Comment? ReplyComment { get; set; }
+
+    /**
+     * <summary>
+     * 评论点赞数
+     * 非空
+     * </summary>
+     */
+    [Required]
+    [Column("co_likes")]
+    public int Likes { get; set; } = 0;
+
+    /**
+     * <summary>
+     * 评论点踩数
+     * 非空
+     * </summary>
+     */
+    [Required]
+    [Column("co_dislikes")]
+    public int Dislikes { get; set; } = 0;
+
     /**
     * <summary>
     * null 值表示评论未被删除
     * </summary>
     */
-    [Column("co_deleted_id")]
+    [ForeignKey("co_deleted_id")]
     public CommentDeleted? IsDeleted { get; set; }
 
-    public IList<CommentLike> CommentLikes { get; set; } = new List<CommentLike>();
+    /*public IList<CommentLike> CommentLikes { get; set; } = new List<CommentLike>();
 
-    public IList<CommentDislike> CommentDislikes { get; set; } = new List<CommentDislike>();
+    public IList<CommentDislike> CommentDislikes { get; set; } = new List<CommentDislike>();*/
 }

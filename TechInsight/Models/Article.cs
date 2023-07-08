@@ -85,10 +85,40 @@ public class Article
 
     /**
      * <summary>
+     * 文章阅读量
+     * 非空
+     * </summary>
+     */
+    [Required]
+    [Column("ar_read")] 
+    public int Read { get; set; } = 0;
+
+    /**
+     * <summary>
+     * 文章点赞数
+     * 非空
+     * </summary>
+     */
+    [Required]
+    [Column("ar_likes")]
+    public int Likes { get; set; } = 0;
+
+    /**
+     * <summary>
+     * 文章点踩数
+     * 非空
+     * </summary>
+     */
+    [Required]
+    [Column("ar_dislikes")]
+    public int Dislikes { get; set; } = 0;
+
+    /**
+     * <summary>
      * null 值表示文章未被删除
      * </summary>
      */
-    [Column("ar_deleted_id")]
+    [ForeignKey("ar_deleted_id")]
     public ArticleDeleted? IsDeleted { get; set; }
 
     /**
@@ -107,12 +137,12 @@ public class Article
      */
     public IList<Comment> Comments { get; set; } = new List<Comment>();
 
-    /**
+    /*/**
      * <summary>
      * 导航属性
      * 文章的点赞列表
      * </summary>
-     */
+     #1#
     public IList<ArticleLike> ArticleLikes { get; set; } = new List<ArticleLike>();
 
     /**
@@ -120,6 +150,6 @@ public class Article
      * 导航属性
      * 文章的点踩列表
      * </summary>
-     */
-    public IList<ArticleDislike> ArticleDislikes { get; set; } = new List<ArticleDislike>();
+     #1#
+    public IList<ArticleDislike> ArticleDislikes { get; set; } = new List<ArticleDislike>();*/
 }

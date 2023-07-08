@@ -22,9 +22,9 @@ public class ArticleDeleted
     [Column("ad_id")]
     public int Id { get; set; }
 
-    [Required]
+    /*[Required]
     [ForeignKey("ad_article_id")]
-    public Article Article { get; set; }
+    public Article Article { get; set; }*/
 
     [Required]
     [Column("ad_delete_time")]
@@ -35,5 +35,6 @@ public class ArticleDeleted
     public UserAccount Operator { get; set; }
 
     [Column("ad_delete_reasons")]
+    [MaxLength(1024)]
     public string? DeleteReasons { get; set; }
 }

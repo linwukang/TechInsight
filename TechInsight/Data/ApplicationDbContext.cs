@@ -6,9 +6,28 @@ namespace TechInsight.Data;
 
 public class ApplicationDbContext : DbContext
 {
+    public DbSet<Article> Articles { get; set; }
+
+    public DbSet<ArticleDeleted> ArticleDeleted { get; set; }
+
+    // public DbSet<ArticleDislike> ArticleDislikes { get; set; }
+
+    // public DbSet<ArticleLike> ArticleLikes { get; set; }
+
+    public DbSet<ArticleReview> ArticleReviews { get; set; }
+
+    public DbSet<Comment> Comments { get; set; }
+
+    // public DbSet<CommentDislike> CommentsDislikes { get; set; }
+
+    // public DbSet<CommentLike> CommentsLikes { get; set; }
+
     public DbSet<UserAccount> UserAccounts { get; set; }
 
+    public DbSet<UserAccountDeleted> UserAccountDeleted { get; set; }
+
     public DbSet<UserProfile> UserProfiles { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
