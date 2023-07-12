@@ -12,9 +12,15 @@ public class LoginAccountService : ILoginAccountService
     // public IDatabase Redis { get; private set; }
     public readonly IDistributedCache Cache;
 
+<<<<<<< HEAD
     public LoginAccountService(IDistributedCache cache, ApplicationDbContext repositories)
     {
         Repositories = repositories;
+=======
+    public LoginAccountService(IDistributedCache cache, DbConnectionConfiguration dbConfiguration)
+    {
+        Repositories = Repositories = new ApplicationDbContext(dbConfiguration);
+>>>>>>> 135e118874173a81c0d269ddc4736f4d89ac62fd
         Cache = cache;
     }
 

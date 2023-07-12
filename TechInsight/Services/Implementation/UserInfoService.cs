@@ -9,9 +9,15 @@ public class UserInfoService : IUserInfoService
 {
     public readonly ApplicationDbContext Repositories;
 
+<<<<<<< HEAD
     public UserInfoService(ApplicationDbContext repositories)
     {
         Repositories = repositories;
+=======
+    public UserInfoService(DbConnectionConfiguration dbConfiguration)
+    {
+        this.Repositories = new ApplicationDbContext(dbConfiguration);
+>>>>>>> 135e118874173a81c0d269ddc4736f4d89ac62fd
     }
 
     protected int? GetUserProfileByUserId(int userId)

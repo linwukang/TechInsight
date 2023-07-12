@@ -11,10 +11,17 @@ public class ArticleService : IArticleService
     public ILoginAccountService LoginAccountService { get; set; }
     public StackExchange.Redis.IDatabase Redis { get; set; }
 
+<<<<<<< HEAD
     public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, ApplicationDbContext repositories)
     {
         LoginAccountService = loginAccountService;
         Repositories = repositories;
+=======
+    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration dbConfiguration)
+    {
+        LoginAccountService = loginAccountService;
+        Repositories = new ApplicationDbContext(dbConfiguration);
+>>>>>>> 135e118874173a81c0d269ddc4736f4d89ac62fd
         Redis = redis;
     }
 
