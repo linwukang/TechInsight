@@ -68,19 +68,6 @@ public class ArticleController : Controller
 
         var articles = ArticleService.GetArticlesOfSortedByPublicationTime(startIndex, count);
 
-
-        // {      // 文章列表
-        //     id: number,         // 文章 id
-        //     title: string,      // 文章标题
-        //     content: string,    // 文章内容
-        //     url: string,
-        //     publisher: {
-        //         id: number,         // 作者 id
-        //         username: string,   // 作者名称
-        //         homeUrl: string,    // 作者主页地址
-        //         profileUrl: string, // 作者头像地址
-        //     }
-        // }
         return Ok(new
         {
             articles = articles.Select(article => new
@@ -89,13 +76,11 @@ public class ArticleController : Controller
                 title = article.Title,
                 content = article.Content,
                 url = "/article?id=" + article.Id,
-                publisher = new
-                {
-                    id = article.Publisher.Id,
-                    username = article.Publisher.UserName,
-                    homeUrl = "/user-home?userId=" + article.Publisher.Id,
-                    profileUrl = ""
-                }
+                publisherId = article.Publisher.Id,
+                publisherUsername = article.Publisher.UserName,
+                publisherHomeUrl = "/user-home?userId=" + article.Publisher.Id,
+                publisherProfilePictureUrl = article.Publisher.UserProfile.ProfilePicture
+
             })
         });
     }
@@ -125,6 +110,15 @@ public class ArticleController : Controller
             title = article.Title,
             content = article.Content,
             publisherId = article.Publisher.Id
+        });
+    }
+
+    [HttpGet("comment-list")]
+    public IActionResult CommentList([FromQuery] int id, [FromQuery] int pages, [FromQuery] int size)
+    {
+        return Ok(new 
+        {
+            comments = ArticleService.GetComments(id, pages, size)
         });
     }
 }

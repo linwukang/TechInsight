@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using TechInsight.Models;
 using TechInsightDb.Models;
 
@@ -46,7 +47,8 @@ public class ApplicationDbContext : DbContext
         var sslmode = _connectionConfiguration["sslmode"];
 
         base.OnConfiguring(optionsBuilder);
-        var connectionString = $"Server={server};Port={port};Database={database}; User={user};Password={password};sslmode={sslmode};";
+        var connectionString =
+            $"Server={server};Port={port};Database={database};User={user};Password={password};sslmode={sslmode};";
 
         optionsBuilder.UseMySQL(connectionString);
     }

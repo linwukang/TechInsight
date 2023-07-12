@@ -119,4 +119,13 @@ public interface IArticleService
     /// <param name="takeCount">获取文章数</param>
     /// <returns>文章列表</returns>
     IList<Article> GetArticlesOfSortedByPublicationTime(int skipCount, int takeCount);
+
+    /// <summary>
+    /// 通过文章 id 获取评论列表
+    /// </summary>
+    /// <param name="articleId">文章 id</param>
+    /// <param name="pages">页数，从 0 开始计算</param>
+    /// <param name="size">每页的评论数</param>
+    /// <returns></returns>
+    IList<Comment> GetComments(int articleId, int pages, int size);
 }

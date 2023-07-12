@@ -11,10 +11,10 @@ public class ArticleService : IArticleService
     public ILoginAccountService LoginAccountService { get; set; }
     public StackExchange.Redis.IDatabase Redis { get; set; }
 
-    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration configuration)
+    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, ApplicationDbContext repositories)
     {
         LoginAccountService = loginAccountService;
-        Repositories = new ApplicationDbContext(configuration);
+        Repositories = repositories;
         Redis = redis;
     }
 
@@ -261,9 +261,23 @@ public class ArticleService : IArticleService
         return Repositories
             .Articles
             .Include(article => article.Publisher)
+            .Include(article => article.Publisher.UserProfile)
             .OrderBy(article => article.PublicationTime)
             .Skip(skipCount)
             .Take(takeCount)
             .ToList();
+    }
+
+    public IList<Comment> GetComments(int articleId, int pages, int size)
+    {
+        return Repositories
+                   .Articles
+                   .Include(article => article.Comments)
+                   .Where(article => article.Id == articleId)
+                   .Skip(pages * size)
+                   .Take(size)
+                   .FirstOrDefault()
+                   ?.Comments
+               ?? new List<Comment>();
     }
 }
