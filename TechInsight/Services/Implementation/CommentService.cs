@@ -1,17 +1,15 @@
-﻿using StackExchange.Redis;
-using System.Security.Policy;
-using Microsoft.EntityFrameworkCore;
-using TechInsight.Data;
-using TechInsight.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TechInsight.Configurations;
+using TechInsightDb.Data;
+using TechInsightDb.Models;
 
 namespace TechInsight.Services.Implementation;
 
 public class CommentService : ICommentService
 {
-    public CommentService(ILoginAccountService loginAccountService, ApplicationDbContext repositories,
-        StackExchange.Redis.IDatabase redis)
+    public CommentService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration configuration)
     {
-        Repositories = repositories;
+        Repositories = Repositories = new ApplicationDbContext(configuration);
         LoginAccountService = loginAccountService;
         Redis = redis;
     }

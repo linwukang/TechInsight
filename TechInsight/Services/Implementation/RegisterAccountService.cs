@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1.Cms;
-using System.Linq;
-using TechInsight.Data;
-using TechInsight.Models;
+using TechInsight.Configurations;
 using TechInsight.Models.Types;
+using TechInsightDb.Data;
+using TechInsightDb.Models;
 
 namespace TechInsight.Services.Implementation;
 
@@ -11,9 +10,9 @@ public class RegisterAccountService : IRegisterAccountService, IDisposable
 {
     public ApplicationDbContext Repositories { get; set; }
 
-    public RegisterAccountService(ApplicationDbContext repositories)
+    public RegisterAccountService(DbConnectionConfiguration configuration)
     {
-        Repositories = repositories;
+        Repositories = Repositories = new ApplicationDbContext(configuration);
     }
 
     public UserAccount? RegisterAccount(string username, string password, string email)

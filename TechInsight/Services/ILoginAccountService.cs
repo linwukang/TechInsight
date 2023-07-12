@@ -37,4 +37,13 @@ public interface ILoginAccountService
     /// <param name="token">token</param>
     /// <returns>登出成功返回 true，登出失败返回false</returns>
     bool Logout(string username, string token);
+
+    /// <summary>
+    /// 账号登出
+    /// </summary>
+    /// <param name="userId">用户 id</param>
+    /// <param name="token">token</param>
+    /// <returns>登出成功返回 true，登出失败返回false</returns>
+    bool Logout(int userId, string token);
+
 }

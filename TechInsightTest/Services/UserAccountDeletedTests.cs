@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using TechInsight;
-using TechInsight.Data;
 using TechInsight.Services;
 using TechInsight.Services.Implementation;
+using TechInsightDb.Data;
 
 namespace TechInsightTest.Services
 {

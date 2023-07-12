@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TechInsight.Data;
+using TechInsightDb.Data;
 
 #nullable disable
 
 namespace TechInsight.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230707154838_Init")]
-    partial class Init
+    [Migration("20230707155308_Comment-IsDeleted-ForeignKey")]
+    partial class CommentIsDeletedForeignKey
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,6 +173,9 @@ namespace TechInsight.Migrations
                     b.Property<int>("co_article_id")
                         .HasColumnType("int");
 
+                    b.Property<int?>("co_deleted_id")
+                        .HasColumnType("int");
+
                     b.Property<int>("co_publisher_id")
                         .HasColumnType("int");
 
@@ -182,6 +185,8 @@ namespace TechInsight.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("co_article_id");
+
+                    b.HasIndex("co_deleted_id");
 
                     b.HasIndex("co_publisher_id");
 
@@ -206,16 +211,10 @@ namespace TechInsight.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("cd_delete_time");
 
-                    b.Property<int>("cd_comment_id")
-                        .HasColumnType("int");
-
                     b.Property<int>("cd_operator_id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("cd_comment_id")
-                        .IsUnique();
 
                     b.HasIndex("cd_operator_id");
 
@@ -394,6 +393,10 @@ namespace TechInsight.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TechInsight.Models.CommentDeleted", "IsDeleted")
+                        .WithMany()
+                        .HasForeignKey("co_deleted_id");
+
                     b.HasOne("TechInsight.Models.UserAccount", "Publisher")
                         .WithMany()
                         .HasForeignKey("co_publisher_id")
@@ -406,6 +409,8 @@ namespace TechInsight.Migrations
 
                     b.Navigation("Article");
 
+                    b.Navigation("IsDeleted");
+
                     b.Navigation("Publisher");
 
                     b.Navigation("ReplyComment");
@@ -413,19 +418,11 @@ namespace TechInsight.Migrations
 
             modelBuilder.Entity("TechInsight.Models.CommentDeleted", b =>
                 {
-                    b.HasOne("TechInsight.Models.Comment", "Comment")
-                        .WithOne("IsDeleted")
-                        .HasForeignKey("TechInsight.Models.CommentDeleted", "cd_comment_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TechInsight.Models.UserAccount", "Operator")
                         .WithMany()
                         .HasForeignKey("cd_operator_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Comment");
 
                     b.Navigation("Operator");
                 });
@@ -463,11 +460,6 @@ namespace TechInsight.Migrations
                     b.Navigation("ArticleReviews");
 
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("TechInsight.Models.Comment", b =>
-                {
-                    b.Navigation("IsDeleted");
                 });
 #pragma warning restore 612, 618
         }

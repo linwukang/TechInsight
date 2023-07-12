@@ -1,4 +1,4 @@
-﻿using TechInsight.Models;
+﻿using TechInsightDb.Models;
 
 namespace TechInsight.Services;
 
@@ -111,4 +111,12 @@ public interface IArticleService
     /// <param name="reasons">删除原因</param>
     /// <returns>是否删除成功</returns>
     bool DeleteArticle(int articleId, int operatorId, string? reasons);
+
+    /// <summary>
+    /// 获取通过发布日期排序的文章列表
+    /// </summary>
+    /// <param name="skipCount">跳过文章数</param>
+    /// <param name="takeCount">获取文章数</param>
+    /// <returns>文章列表</returns>
+    IList<Article> GetArticlesOfSortedByPublicationTime(int skipCount, int takeCount);
 }

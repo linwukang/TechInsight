@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using TechInsight;
-using TechInsight.Data;
 using TechInsight.Services;
 using TechInsight.Services.Implementation;
+using TechInsightDb.Data;
 using Utils.Tokens;
 
 namespace TechInsightTest.Services;

@@ -1,8 +1,7 @@
-﻿using StackExchange.Redis;
-using TechInsight.Data;
-using Utils.Interface.Implementation;
-using Utils.Redis;
-using Utils.Redis.Implementation;
+﻿using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
+using TechInsight.Configurations;
+using TechInsightDb.Data;
 using Utils.Tokens;
 
 namespace TechInsight.Services.Implementation;
@@ -10,18 +9,20 @@ namespace TechInsight.Services.Implementation;
 public class LoginAccountService : ILoginAccountService
 {
     public readonly ApplicationDbContext Repositories;
+    // public IDatabase Redis { get; private set; }
+    public readonly IDistributedCache Cache;
 
-    public LoginAccountService(ApplicationDbContext repositories, IDatabase redis)
+    public LoginAccountService(IDistributedCache cache, DbConnectionConfiguration configuration)
     {
-        Repositories = repositories;
-        Redis = redis;
+        Repositories = Repositories = new ApplicationDbContext(configuration);
+        Cache = cache;
     }
 
     public const string Issuer = "System";
     public const string UserIdToToken = "LoginAccountService:Tokens:UserId:";
     public const string TokenToUserId = "LoginAccountService:Tokens:Token:";
 
-    public IDatabase Redis { get; private set; }
+    
 
     public int? GetUserAccountId(string username)
     {
@@ -49,8 +50,11 @@ public class LoginAccountService : ILoginAccountService
         // Redis[UserIdToToken + account.Id] = token;
         // Redis[TokenToUserId + token] = account.Id.ToString();
 
-        Redis.StringSet(UserIdToToken + account.Id, token);
-        Redis.StringSet(TokenToUserId + token, account.Id.ToString());
+        // Redis.StringSet(UserIdToToken + account.Id, token);
+        // Redis.StringSet(TokenToUserId + token, account.Id.ToString());
+
+        Cache.Set(UserIdToToken + account.Id, Encoding.UTF8.GetBytes(token));
+        Cache.Set(TokenToUserId + token, Encoding.UTF8.GetBytes(account.Id.ToString()));
 
         return token;
     }
@@ -69,9 +73,10 @@ public class LoginAccountService : ILoginAccountService
 
         // return Redis.TryGetValue(UserIdToToken + account.Id, out var token) 
         //        && Token.ValidateToken(token, Issuer, account.Id.ToString());
-        var token = Redis.StringGet(UserIdToToken + account.Id);
+        // var token = Redis.StringGet(UserIdToToken + account.Id);
+        var token = Encoding.UTF8.GetString(Cache.Get(UserIdToToken + account.Id) ?? new byte[] { });
 
-        return Token.ValidateToken(token.ToString(), Issuer, account.Id.ToString());
+        return Token.ValidateToken(token, Issuer, account.Id.ToString());
     }
 
     public bool Logged(string username)
@@ -91,25 +96,40 @@ public class LoginAccountService : ILoginAccountService
             .Where(ac => ac.IsDeleted == null)
             .FirstOrDefault(ac => ac.UserName == username);
 
-        if (account is null || !Logged(account.Id))
+        if (account is null)
         {
             return false;
         }
 
-        // if (Redis[UserIdToToken + account.Id] != token)
-        // {
-        //     return false;
-        // }
-        //
-        // return Redis.Remove(UserIdToToken + account.Id) 
-        //        && Redis.Remove(TokenToUserId + token);
+        return Logout(account.Id, token);
+    }
 
-        if (Redis.StringGet(UserIdToToken + account.Id).ToString() != token)
+    public bool Logout(int userId, string token)
+    {
+        /*if (!Logged(userId))
+        {
+            return false;
+        }
+        if (Redis.StringGet(UserIdToToken + userId).ToString() != token)
         {
             return false;
         }
 
-        return Redis.KeyDelete(UserIdToToken + account.Id) 
-               && Redis.KeyDelete(TokenToUserId + token);
+        return Redis.KeyDelete(UserIdToToken + userId)
+               && Redis.KeyDelete(TokenToUserId + token);*/
+
+        if (!Logged(userId))
+        {
+            return false;
+        }
+        if (Encoding.UTF8.GetString(Cache.Get(UserIdToToken + userId) ?? new byte[]{}) != token)
+        {
+            return false;
+        }
+
+        Cache.Remove(UserIdToToken + userId);
+        Cache.Remove(TokenToUserId + token);
+
+        return true;
     }
 }

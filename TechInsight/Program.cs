@@ -1,6 +1,5 @@
 using StackExchange.Redis;
 using TechInsight;
-using TechInsight.Data;
 using TechInsight.Services.Implementation;
 using TechInsight.Services;
 using Utils.Interface.Implementation;

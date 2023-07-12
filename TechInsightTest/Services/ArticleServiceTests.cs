@@ -3,10 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Utilities;
 using StackExchange.Redis;
 using TechInsight;
-using TechInsight.Data;
 using TechInsight.Models;
 using TechInsight.Services;
 using TechInsight.Services.Implementation;
+using TechInsightDb.Data;
+using TechInsightDb.Models;
 using Utils.Tokens;
 
 namespace TechInsightTest.Services;

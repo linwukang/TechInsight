@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-using TechInsight.Data;
-using TechInsight.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TechInsight.Configurations;
+using TechInsightDb.Data;
+using TechInsightDb.Models;
 
 namespace TechInsight.Services.Implementation;
 
@@ -10,10 +11,10 @@ public class ArticleService : IArticleService
     public ILoginAccountService LoginAccountService { get; set; }
     public StackExchange.Redis.IDatabase Redis { get; set; }
 
-    public ArticleService(ILoginAccountService loginAccountService, ApplicationDbContext repositories, StackExchange.Redis.IDatabase redis)
+    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration configuration)
     {
         LoginAccountService = loginAccountService;
-        Repositories = repositories;
+        Repositories = new ApplicationDbContext(configuration);
         Redis = redis;
     }
 
@@ -24,6 +25,7 @@ public class ArticleService : IArticleService
     {
         return Repositories
             .Articles
+            .Include(article => article.Publisher)
             .FirstOrDefault(article => article.Id == articleId);
     }
 
@@ -252,5 +254,16 @@ public class ArticleService : IArticleService
         };
 
         return Repositories.SaveChanges() != 0;
+    }
+
+    public IList<Article> GetArticlesOfSortedByPublicationTime(int skipCount, int takeCount)
+    {
+        return Repositories
+            .Articles
+            .Include(article => article.Publisher)
+            .OrderBy(article => article.PublicationTime)
+            .Skip(skipCount)
+            .Take(takeCount)
+            .ToList();
     }
 }

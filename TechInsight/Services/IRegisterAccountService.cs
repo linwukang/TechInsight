@@ -1,4 +1,4 @@
-﻿using TechInsight.Models;
+﻿using TechInsightDb.Models;
 
 namespace TechInsight.Services;
 
