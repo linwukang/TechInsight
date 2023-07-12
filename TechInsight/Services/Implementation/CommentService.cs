@@ -7,9 +7,9 @@ namespace TechInsight.Services.Implementation;
 
 public class CommentService : ICommentService
 {
-    public CommentService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration configuration)
+    public CommentService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration dbConfiguration)
     {
-        Repositories = Repositories = new ApplicationDbContext(configuration);
+        Repositories = Repositories = new ApplicationDbContext(dbConfiguration);
         LoginAccountService = loginAccountService;
         Redis = redis;
     }

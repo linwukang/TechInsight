@@ -1,10 +1,4 @@
-using StackExchange.Redis;
 using TechInsight;
-using TechInsight.Services.Implementation;
-using TechInsight.Services;
-using Utils.Interface.Implementation;
-using Utils.Redis;
-using Utils.Redis.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 

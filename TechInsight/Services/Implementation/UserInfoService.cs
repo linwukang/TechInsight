@@ -9,9 +9,9 @@ public class UserInfoService : IUserInfoService
 {
     public readonly ApplicationDbContext Repositories;
 
-    public UserInfoService(DbConnectionConfiguration configuration)
+    public UserInfoService(DbConnectionConfiguration dbConfiguration)
     {
-        this.Repositories = new ApplicationDbContext(configuration);
+        this.Repositories = new ApplicationDbContext(dbConfiguration);
     }
 
     protected int? GetUserProfileByUserId(int userId)

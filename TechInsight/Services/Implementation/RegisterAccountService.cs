@@ -10,9 +10,9 @@ public class RegisterAccountService : IRegisterAccountService, IDisposable
 {
     public ApplicationDbContext Repositories { get; set; }
 
-    public RegisterAccountService(DbConnectionConfiguration configuration)
+    public RegisterAccountService(DbConnectionConfiguration dbConfiguration)
     {
-        Repositories = Repositories = new ApplicationDbContext(configuration);
+        Repositories = Repositories = new ApplicationDbContext(dbConfiguration);
     }
 
     public UserAccount? RegisterAccount(string username, string password, string email)
