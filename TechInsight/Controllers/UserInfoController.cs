@@ -4,7 +4,7 @@ using TechInsight.Services;
 namespace TechInsight.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("user-info")]
 public class UserInfoController : Controller
 {
     public readonly IUserInfoService UserInfoService;
@@ -17,7 +17,7 @@ public class UserInfoController : Controller
     }
 
 
-    [HttpGet("user-info")]
+    [HttpGet]
     public IActionResult UserInfo([FromQuery] int id)
     {
         var userName = UserInfoService.GetUserName(id);

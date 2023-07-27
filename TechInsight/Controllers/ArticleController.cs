@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TechInsight.Dto;
-using TechInsight.Models;
 using TechInsight.Services;
-using TechInsight.Services.Implementation;
 
 namespace TechInsight.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("articles")]
 public class ArticleController : Controller
 {
     public readonly IArticleService ArticleService;
@@ -30,7 +28,7 @@ public class ArticleController : Controller
     [HttpPost("publish-article")]
     public IActionResult PublishArticle([FromBody] PublishArticleDto article)
     {
-        var articleId = ArticleService.PublishArticle(article.UserId, article.Title, article.Content);
+        var articleId = ArticleService.PublishArticle(article.UserId, article.Title, article.Content, article.Tags);
 
         if (articleId is null)
         {
@@ -48,8 +46,19 @@ public class ArticleController : Controller
         });
     }
 
+    [HttpPost("edit-article")]
+    public IActionResult EditArticle([FromBody] EditArticleDto article)
+    {
+        var editResult = ArticleService.EditArticle(article.Id, article.Title, article.Content, article.Tags);
+
+        return Ok(new
+        {
+            succeed = editResult
+        });
+    }
+
     /// <summary>
-    /// 加载文章列表
+    /// 加载预览文章列表
     /// </summary>
     /// <param name="userId">申请加载文章列表的用户 id</param>
     /// <param name="startIndex">开始下标</param>
@@ -58,7 +67,7 @@ public class ArticleController : Controller
     /// 加载成功:
     /// { articles: Article[] }
     /// </returns>
-    [HttpGet("load-articles")]
+    [HttpGet("load-preview-articles")]
     public IActionResult LoadArticles([FromQuery] int userId, [FromQuery] int startIndex, [FromQuery] int count)
     {
         if (count > 20)
@@ -74,7 +83,7 @@ public class ArticleController : Controller
             {
                 id = article.Id,
                 title = article.Title,
-                content = article.Content,
+                content = article.Content[..500],
                 url = "/article?id=" + article.Id,
                 publisherId = article.Publisher.Id,
                 publisherUsername = article.Publisher.UserName,
@@ -113,12 +122,32 @@ public class ArticleController : Controller
         });
     }
 
+    /// <summary>
+    /// 通过文章的 id 获取文章的评论，并分页返回
+    /// </summary>
+    /// <param name="id">文章 id</param>
+    /// <param name="pages">页数，从 0 开始计数</param>
+    /// <param name="size">每页评论的数量</param>
+    /// <returns></returns>
     [HttpGet("comment-list")]
     public IActionResult CommentList([FromQuery] int id, [FromQuery] int pages, [FromQuery] int size)
     {
         return Ok(new 
         {
-            comments = ArticleService.GetComments(id, pages, size)
+            comments = ArticleService
+                .GetComments(id, pages, size)
+                .Select(comment => new
+                {
+                    id = comment.Id,
+                    profilePicture = comment.Publisher.UserProfile.ProfilePicture,
+                    userHome = "/user-home?userId=" + comment.Publisher.Id,
+                    username = comment.Publisher.UserName,
+                    publishDate = comment.PublicationDate,
+                    content = comment.Content,
+                    likes = comment.Likes,
+                    dislikes = comment.Dislikes,
+                })
+                .ToList()
         });
     }
 }

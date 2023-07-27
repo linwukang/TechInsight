@@ -10,20 +10,14 @@ public class RegisterAccountService : IRegisterAccountService, IDisposable
 {
     public ApplicationDbContext Repositories { get; set; }
 
-<<<<<<< HEAD
     public RegisterAccountService(ApplicationDbContext repositories)
     {
         Repositories = repositories;
-=======
-    public RegisterAccountService(DbConnectionConfiguration dbConfiguration)
-    {
-        Repositories = Repositories = new ApplicationDbContext(dbConfiguration);
->>>>>>> 135e118874173a81c0d269ddc4736f4d89ac62fd
     }
 
     public UserAccount? RegisterAccount(string username, string password, string email)
     {
-        if (ExistsUserName(username))
+        if (IsUserNameExists(username))
         {
             return null;
         }
@@ -48,7 +42,7 @@ public class RegisterAccountService : IRegisterAccountService, IDisposable
             : null;
     }
 
-    public bool ExistsUserName(string username)
+    public bool IsUserNameExists(string username)
     {
         var count = Repositories
             .UserAccounts

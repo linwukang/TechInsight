@@ -113,6 +113,11 @@ public class Article
     [Column("ar_dislikes")]
     public int Dislikes { get; set; } = 0;
 
+    [Required]
+    [Column("ar_tags")]
+    [MaxLength(256)]
+    public IList<string> Tags { get; set; }
+
     /**
      * <summary>
      * null 值表示文章未被删除

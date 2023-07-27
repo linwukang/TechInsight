@@ -1,8 +1,8 @@
 ﻿namespace TechInsight.Dto;
 
-public record PublishArticleDto
+public record EditArticleDto
 {
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     public string? Title { get; set; }
 

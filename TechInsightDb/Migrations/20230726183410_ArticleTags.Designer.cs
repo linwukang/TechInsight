@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechInsightDb.Data;
 
@@ -10,9 +11,11 @@ using TechInsightDb.Data;
 namespace TechInsight.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230726183410_ArticleTags")]
+    partial class ArticleTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,9 +59,7 @@ namespace TechInsight.Migrations
                         .HasColumnName("ar_submission_time");
 
                     b.Property<string>("Tags")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("longtext")
                         .HasColumnName("ar_tags");
 
                     b.Property<string>("Title")

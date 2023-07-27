@@ -39,7 +39,7 @@ public class CommentServiceTests
     public void Init()
     {
         var services = new ServiceCollection();
-        DI.Configuration(services);
+        services.AddServices();
         var serviceProvider = services.BuildServiceProvider();
 
         _articleService = serviceProvider.GetService<IArticleService>();
@@ -48,17 +48,17 @@ public class CommentServiceTests
         _registerAccountService = serviceProvider.GetService<IRegisterAccountService>();
         _context = serviceProvider.GetService<ApplicationDbContext>();
         // 
-        if (!_registerAccountService.ExistsUserName(Username1))
+        if (!_registerAccountService.IsUserNameExists(Username1))
             _registerAccountService.RegisterAccount(Username1, Password1, "sb1@qq.com");
 
         xiaoming = _context.UserAccounts.Single(ua => ua.UserName == Username1);
 
-        if (!_registerAccountService.ExistsUserName(Username2))
+        if (!_registerAccountService.IsUserNameExists(Username2))
             _registerAccountService.RegisterAccount(Username2, Password2, "sb2@qq.com");
 
         xiaohua = _context.UserAccounts.Single(ua => ua.UserName == Username2);
 
-        if (!_registerAccountService.ExistsUserName(Username3))
+        if (!_registerAccountService.IsUserNameExists(Username3))
             _registerAccountService.RegisterAccount(Username3, Password3, "sb3@qq.com");
 
         xiaohong = _context.UserAccounts.Single(ua => ua.UserName == Username3);

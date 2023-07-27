@@ -18,7 +18,7 @@ public interface IArticleService
     /// <param name="title">文章标题</param>
     /// <param name="content">文章内容</param>
     /// <returns>发布成功返回文章 id，否则返回 null</returns>
-    int? PublishArticle(int publisherId, string title, string content);
+    int? PublishArticle(int publisherId, string title, string content, IList<string> tags);
 
     /// <summary>
     /// 编辑文章
@@ -27,7 +27,7 @@ public interface IArticleService
     /// <param name="title">文章标题</param>
     /// <param name="content">文章内容</param>
     /// <returns>编辑是否成功</returns>
-    bool EditArticle(int articleId, string title, string content);
+    bool EditArticle(int articleId, string? title, string? content, IList<string>? tags);
 
     /// <summary>
     /// 为文章点赞

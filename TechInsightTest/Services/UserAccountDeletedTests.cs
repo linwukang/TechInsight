@@ -20,7 +20,7 @@ namespace TechInsightTest.Services
         public void Init()
         {
             var services = new ServiceCollection();
-            DI.Configuration(services);
+            services.AddServices();
             var serviceProvider = services.BuildServiceProvider();
 
             _loginAccountService = serviceProvider.GetService<ILoginAccountService>();
@@ -89,24 +89,24 @@ namespace TechInsightTest.Services
         [TestMethod]
         public void TestRegisterAndDeleteAccount()
         {
-            Assert.IsFalse(_registerAccountService.ExistsUserName("张三"));
-            Assert.IsFalse(_registerAccountService.ExistsUserName("李四"));
-            Assert.IsFalse(_registerAccountService.ExistsUserName("王五"));
-            Assert.IsFalse(_registerAccountService.ExistsUserName("赵六"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("张三"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("李四"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("王五"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("赵六"));
 
             TestRegisterAccount();
 
-            Assert.IsTrue(_registerAccountService.ExistsUserName("张三"));
-            Assert.IsTrue(_registerAccountService.ExistsUserName("李四"));
-            Assert.IsTrue(_registerAccountService.ExistsUserName("王五"));
-            Assert.IsTrue(_registerAccountService.ExistsUserName("赵六"));
+            Assert.IsTrue(_registerAccountService.IsUserNameExists("张三"));
+            Assert.IsTrue(_registerAccountService.IsUserNameExists("李四"));
+            Assert.IsTrue(_registerAccountService.IsUserNameExists("王五"));
+            Assert.IsTrue(_registerAccountService.IsUserNameExists("赵六"));
 
             TestDeleteAccount();
 
-            Assert.IsFalse(_registerAccountService.ExistsUserName("张三"));
-            Assert.IsFalse(_registerAccountService.ExistsUserName("李四"));
-            Assert.IsFalse(_registerAccountService.ExistsUserName("王五"));
-            Assert.IsFalse(_registerAccountService.ExistsUserName("赵六"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("张三"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("李四"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("王五"));
+            Assert.IsFalse(_registerAccountService.IsUserNameExists("赵六"));
 
             TestRealDeleteAccount();
         }

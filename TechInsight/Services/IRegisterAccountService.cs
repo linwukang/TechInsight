@@ -18,7 +18,7 @@ public interface IRegisterAccountService
     /// </summary>
     /// <param name="username">用户名</param>
     /// <returns>存在返回 true，不存在返回 false</returns>
-    bool ExistsUserName(string username);
+    bool IsUserNameExists(string username);
 
     /// <summary>
     /// 删除用户账号

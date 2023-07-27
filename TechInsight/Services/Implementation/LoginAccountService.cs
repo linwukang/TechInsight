@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 using TechInsight.Configurations;
 using TechInsightDb.Data;
 using Utils.Tokens;
@@ -9,19 +10,14 @@ namespace TechInsight.Services.Implementation;
 public class LoginAccountService : ILoginAccountService
 {
     public readonly ApplicationDbContext Repositories;
-    // public IDatabase Redis { get; private set; }
+    public IDatabase Redis { get; private set; }
     public readonly IDistributedCache Cache;
 
-<<<<<<< HEAD
-    public LoginAccountService(IDistributedCache cache, ApplicationDbContext repositories)
+    public LoginAccountService(IDistributedCache cache, ApplicationDbContext repositories, IDatabase redis)
     {
         Repositories = repositories;
-=======
-    public LoginAccountService(IDistributedCache cache, DbConnectionConfiguration dbConfiguration)
-    {
-        Repositories = Repositories = new ApplicationDbContext(dbConfiguration);
->>>>>>> 135e118874173a81c0d269ddc4736f4d89ac62fd
         Cache = cache;
+        Redis = redis;
     }
 
     public const string Issuer = "System";

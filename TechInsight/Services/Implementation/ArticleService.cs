@@ -11,20 +11,14 @@ public class ArticleService : IArticleService
     public ILoginAccountService LoginAccountService { get; set; }
     public StackExchange.Redis.IDatabase Redis { get; set; }
 
-<<<<<<< HEAD
-    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, ApplicationDbContext repositories)
+    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis,
+        ApplicationDbContext repositories)
     {
         LoginAccountService = loginAccountService;
-        Repositories = repositories;
-=======
-    public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis, DbConnectionConfiguration dbConfiguration)
-    {
-        LoginAccountService = loginAccountService;
-        Repositories = new ApplicationDbContext(dbConfiguration);
->>>>>>> 135e118874173a81c0d269ddc4736f4d89ac62fd
         Redis = redis;
+        Repositories = repositories;
     }
-
+    
     public const string LikesPrefix = "ArticleService:Likes:";
     public const string DislikesPrefix = "ArticleService:Dislikes:";
 
@@ -36,7 +30,7 @@ public class ArticleService : IArticleService
             .FirstOrDefault(article => article.Id == articleId);
     }
 
-    public int? PublishArticle(int publisherId, string title, string content)
+    public int? PublishArticle(int publisherId, string title, string content, IList<string> tags)
     {
         if (!LoginAccountService.Logged(publisherId))
         {
@@ -62,6 +56,7 @@ public class ArticleService : IArticleService
             Read = 0,
             Likes = 0,
             Dislikes = 0,
+            Tags = tags,
             IsDeleted = null
         };
 
@@ -76,7 +71,7 @@ public class ArticleService : IArticleService
         return entryArticle.Id;
     }
 
-    public bool EditArticle(int articleId, string title, string content)
+    public bool EditArticle(int articleId, string? title, string? content, IList<string>? tags)
     {
         var article = Repositories
             .Articles
@@ -86,8 +81,9 @@ public class ArticleService : IArticleService
             return false;
         }
 
-        article.Title = title;
-        article.Content = content;
+        article.Title = title ?? article.Title;
+        article.Content = content ?? article.Content;
+        article.Tags = tags ?? article.Tags;
         article.LastModifiedTime = DateTime.Now;
 
         var changes = Repositories.SaveChanges();
@@ -277,14 +273,23 @@ public class ArticleService : IArticleService
 
     public IList<Comment> GetComments(int articleId, int pages, int size)
     {
+        var article = Repositories
+            .Articles
+            .FirstOrDefault(article => article.Id == articleId);
+        if (article is null)
+        {
+            return new List<Comment>();
+        }
+
+
         return Repositories
-                   .Articles
-                   .Include(article => article.Comments)
-                   .Where(article => article.Id == articleId)
-                   .Skip(pages * size)
-                   .Take(size)
-                   .FirstOrDefault()
-                   ?.Comments
-               ?? new List<Comment>();
+            .Comments
+            .Include(comment => comment.Article)
+            .Include(comment => comment.Publisher)
+            .Include(comment => comment.Publisher.UserProfile)
+            .Where(comment => comment.Article.Id == articleId)
+            .Skip(pages * size)
+            .Take(size)
+            .ToList();
     }
 }

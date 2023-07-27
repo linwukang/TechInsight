@@ -5,7 +5,7 @@ using TechInsight.Services;
 namespace TechInsight.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("accounts")]
 public class AccountController : ControllerBase
 {
     public readonly ILoginAccountService LoginAccountService;

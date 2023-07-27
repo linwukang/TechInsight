@@ -21,7 +21,7 @@ public class LoginAccountTests
     public void Init()
     {
         var services = new ServiceCollection();
-        DI.Configuration(services);
+        services.AddServices();
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -36,7 +36,7 @@ public class LoginAccountTests
         const string username = "xiaoming";
         const string password = "123456";
 
-        if (!_registerAccountService.ExistsUserName(username))
+        if (!_registerAccountService.IsUserNameExists(username))
         {
             _registerAccountService.RegisterAccount(username, password, "sb@qq.com");
         }
