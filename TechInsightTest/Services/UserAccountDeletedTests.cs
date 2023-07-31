@@ -20,7 +20,7 @@ namespace TechInsightTest.Services
         public void Init()
         {
             var services = new ServiceCollection();
-            services.AddServices();
+            services.AddTechInsightServices();
             var serviceProvider = services.BuildServiceProvider();
 
             _loginAccountService = serviceProvider.GetService<ILoginAccountService>();

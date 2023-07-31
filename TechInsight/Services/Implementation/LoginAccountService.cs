@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using TechInsight.Configurations;
+using TechInsight.Models.Types;
 using TechInsightDb.Data;
 using Utils.Tokens;
 
@@ -9,16 +10,16 @@ namespace TechInsight.Services.Implementation;
 
 public class LoginAccountService : ILoginAccountService
 {
-    public readonly ApplicationDbContext Repositories;
-    public IDatabase Redis { get; private set; }
-    public readonly IDistributedCache Cache;
-
     public LoginAccountService(IDistributedCache cache, ApplicationDbContext repositories, IDatabase redis)
     {
         Repositories = repositories;
         Cache = cache;
         Redis = redis;
     }
+
+    public readonly ApplicationDbContext Repositories;
+    public readonly IDatabase Redis;
+    public readonly IDistributedCache Cache;
 
     public const string Issuer = "System";
     public const string UserIdToToken = "LoginAccountService:Tokens:UserId:";
@@ -49,12 +50,6 @@ public class LoginAccountService : ILoginAccountService
 
         var token = Token.GenerateToken(Issuer, account.Id.ToString());
 
-        // Redis[UserIdToToken + account.Id] = token;
-        // Redis[TokenToUserId + token] = account.Id.ToString();
-
-        // Redis.StringSet(UserIdToToken + account.Id, token);
-        // Redis.StringSet(TokenToUserId + token, account.Id.ToString());
-
         Cache.Set(UserIdToToken + account.Id, Encoding.UTF8.GetBytes(token));
         Cache.Set(TokenToUserId + token, Encoding.UTF8.GetBytes(account.Id.ToString()));
 
@@ -73,9 +68,6 @@ public class LoginAccountService : ILoginAccountService
             return false;
         }
 
-        // return Redis.TryGetValue(UserIdToToken + account.Id, out var token) 
-        //        && Token.ValidateToken(token, Issuer, account.Id.ToString());
-        // var token = Redis.StringGet(UserIdToToken + account.Id);
         var token = Encoding.UTF8.GetString(Cache.Get(UserIdToToken + account.Id) ?? new byte[] { });
 
         return Token.ValidateToken(token, Issuer, account.Id.ToString());
@@ -98,27 +90,12 @@ public class LoginAccountService : ILoginAccountService
             .Where(ac => ac.IsDeleted == null)
             .FirstOrDefault(ac => ac.UserName == username);
 
-        if (account is null)
-        {
-            return false;
-        }
-
-        return Logout(account.Id, token);
+        return account is not null 
+               && Logout(account.Id, token);
     }
 
     public bool Logout(int userId, string token)
     {
-        /*if (!Logged(userId))
-        {
-            return false;
-        }
-        if (Redis.StringGet(UserIdToToken + userId).ToString() != token)
-        {
-            return false;
-        }
-
-        return Redis.KeyDelete(UserIdToToken + userId)
-               && Redis.KeyDelete(TokenToUserId + token);*/
 
         if (!Logged(userId))
         {
@@ -133,5 +110,13 @@ public class LoginAccountService : ILoginAccountService
         Cache.Remove(TokenToUserId + token);
 
         return true;
+    }
+
+    public bool IsReviewer(int userId)
+    {
+        return Repositories
+            .UserAccounts
+            .First(ac => ac.Id == userId)
+            .Role == UserRole.Reviewer;
     }
 }

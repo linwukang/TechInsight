@@ -15,9 +15,9 @@ public class CommentService : ICommentService
         Repositories = repositories;
     }
 
-    public ApplicationDbContext Repositories { get; set; }
-    public ILoginAccountService LoginAccountService { get; set; }
-    public StackExchange.Redis.IDatabase Redis { get; set; }
+    public readonly ApplicationDbContext Repositories;
+    public readonly ILoginAccountService LoginAccountService;
+    public readonly StackExchange.Redis.IDatabase Redis;
 
     public const string LikesPrefix = "CommentService:Likes:";
     public const string DislikesPrefix = "CommentService:Dislikes:";

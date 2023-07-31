@@ -21,7 +21,7 @@ public class LoginAccountTests
     public void Init()
     {
         var services = new ServiceCollection();
-        services.AddServices();
+        services.AddTechInsightServices();
 
         var serviceProvider = services.BuildServiceProvider();
 

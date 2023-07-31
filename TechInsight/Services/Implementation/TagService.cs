@@ -4,12 +4,12 @@ namespace TechInsight.Services.Implementation;
 
 public class TagService : ITagService
 {
-    public IDatabase Redis { get; set; }
-
     public TagService(IDatabase redis)
     {
         Redis = redis;
     }
+
+    public readonly IDatabase Redis;
 
     public const string TagPrefix = "TagService:Tag:";
 

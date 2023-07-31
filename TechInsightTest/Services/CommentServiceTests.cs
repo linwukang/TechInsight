@@ -39,7 +39,7 @@ public class CommentServiceTests
     public void Init()
     {
         var services = new ServiceCollection();
-        services.AddServices();
+        services.AddTechInsightServices();
         var serviceProvider = services.BuildServiceProvider();
 
         _articleService = serviceProvider.GetService<IArticleService>();

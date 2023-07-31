@@ -46,4 +46,10 @@ public interface ILoginAccountService
     /// <returns>登出成功返回 true，登出失败返回false</returns>
     bool Logout(int userId, string token);
 
+    /// <summary>
+    /// 判断用户是否为审核员
+    /// </summary>
+    /// <param name="userId">用户 id</param>
+    /// <returns>是审核员返回 true，否则返回 false</returns>
+    bool IsReviewer(int userId);
 }

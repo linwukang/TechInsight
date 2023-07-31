@@ -8,12 +8,13 @@ namespace TechInsight.Services.Implementation;
 
 public class RegisterAccountService : IRegisterAccountService, IDisposable
 {
-    public ApplicationDbContext Repositories { get; set; }
 
     public RegisterAccountService(ApplicationDbContext repositories)
     {
         Repositories = repositories;
     }
+
+    public readonly ApplicationDbContext Repositories;
 
     public UserAccount? RegisterAccount(string username, string password, string email)
     {

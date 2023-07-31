@@ -7,10 +7,6 @@ namespace TechInsight.Services.Implementation;
 
 public class ArticleService : IArticleService
 {
-    public ApplicationDbContext Repositories { get; set; }
-    public ILoginAccountService LoginAccountService { get; set; }
-    public StackExchange.Redis.IDatabase Redis { get; set; }
-
     public ArticleService(ILoginAccountService loginAccountService, StackExchange.Redis.IDatabase redis,
         ApplicationDbContext repositories)
     {
@@ -18,7 +14,11 @@ public class ArticleService : IArticleService
         Redis = redis;
         Repositories = repositories;
     }
-    
+
+    public readonly ApplicationDbContext Repositories;
+    public readonly ILoginAccountService LoginAccountService;
+    public readonly StackExchange.Redis.IDatabase Redis;
+
     public const string LikesPrefix = "ArticleService:Likes:";
     public const string DislikesPrefix = "ArticleService:Dislikes:";
 

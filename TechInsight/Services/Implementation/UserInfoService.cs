@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using TechInsight.Configurations;
 using TechInsightDb.Data;
 using TechInsightDb.Models;
@@ -7,12 +8,13 @@ namespace TechInsight.Services.Implementation;
 
 public class UserInfoService : IUserInfoService
 {
-    public readonly ApplicationDbContext Repositories;
-
     public UserInfoService(ApplicationDbContext repositories)
     {
         Repositories = repositories;
     }
+
+    public readonly ApplicationDbContext Repositories;
+
     protected int? GetUserProfileByUserId(int userId)
     {
         return Repositories

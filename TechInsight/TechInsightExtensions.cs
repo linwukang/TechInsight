@@ -37,7 +37,7 @@ public static class TechInsightExtensions
             .AddScoped<IUserInfoService, UserInfoService>();
     }*/
 
-    public static IServiceCollection AddServices(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddTechInsightServices(this IServiceCollection serviceCollection)
     {
         var config = ConfigurationOptions.Parse("localhost:6379");
         var connect = ConnectionMultiplexer.Connect(config);
@@ -58,14 +58,15 @@ public static class TechInsightExtensions
 
         serviceCollection
             // 添加 EF Core 数据库上下文对象到容器
-            .AddScoped(_ => new ApplicationDbContext(appConfig.GetSection("EFCore:DbContext:Connection")))
+            .AddTransient(_ => new ApplicationDbContext(appConfig.GetSection("EFCore:DbContext:Connection")))
             // 添加服务到容器
             .AddScoped<ILoginAccountService, LoginAccountService>()
             .AddScoped<IRegisterAccountService, RegisterAccountService>()
             .AddScoped<IArticleService, ArticleService>()
             .AddScoped<ICommentService, CommentService>()
             .AddScoped<IUserInfoService, UserInfoService>()
-            .AddScoped<ITagService, TagService>();
+            .AddScoped<ITagService, TagService>()
+            .AddScoped<IArticleReviewService, ArticleReviewService>();
         return serviceCollection;
     }
 }
