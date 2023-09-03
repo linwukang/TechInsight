@@ -19,6 +19,12 @@ public class ArticleReviewController : Controller
     private readonly ILoginAccountService _loginAccountService;
     private readonly IArticleService _articleService;
 
+    /// <summary>
+    /// 使文章通过审核
+    /// </summary>
+    /// <param name="articleId">文章 id</param>
+    /// <param name="reviewerId">审核员 id</param>
+    /// <returns></returns>
     [HttpPost("approve-article/{articleId:int}")]
     public IActionResult ApproveArticle([FromRoute] int articleId, [FromQuery] int reviewerId)
     {
@@ -36,6 +42,13 @@ public class ArticleReviewController : Controller
         return Ok("文章已通过审核");
     }
 
+    /// <summary>
+    /// 使文章不通过审核
+    /// </summary>
+    /// <param name="articleId">文章 id</param>
+    /// <param name="reviewerId">审核员 id</param>
+    /// <param name="reasons">审核不通过原因</param>
+    /// <returns></returns>
     [HttpPost("reject-article/{articleId:int}")]
     public IActionResult RejectArticle([FromRoute] int articleId, [FromQuery] int reviewerId, [FromQuery] string reasons)
     {

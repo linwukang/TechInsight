@@ -11,21 +11,23 @@ public class ArticleReviewService : IArticleReviewService
 {
     public ArticleReviewService(IDatabase redis, ApplicationDbContext repositories)
     {
-        Redis = redis;
-        Repositories = repositories;
+        _redis = redis;
+        _repositories = repositories;
     }
 
-    public readonly IDatabase Redis;
-    public readonly ApplicationDbContext Repositories;
+    private readonly IDatabase _redis;
+    private readonly ApplicationDbContext _repositories;
 
-    public const string PendingArticles = "ArticleReviewService:PendingArticles";
-    public const string ProcessingArticles = "ArticleReviewService:ProcessingArticles:";
-    public const string RejectedArticles = "ArticleReviewService:RejectedArticles";
+    private const string PendingArticles = "ArticleReview:PendingArticles";
+    private const string RejectedArticles = "ArticleReview:RejectedArticles";
+    // Key      ArticleReview:ProcessingArticles:<articleId>
+    // Value    <reviewerId>
+    private const string ProcessingArticles = "ArticleReview:ProcessingArticles:";
 
     public IList<int> GetPendingArticle()
     {
         return 
-            Redis
+            _redis
                 .SetMembers(PendingArticles)
                 .ToList()
                 .Select(mem => int.Parse(mem.ToString()))
@@ -34,13 +36,13 @@ public class ArticleReviewService : IArticleReviewService
 
     public long GetPendingArticleCount()
     {
-        return Redis.SetLength(PendingArticles);
+        return _redis.SetLength(PendingArticles);
     }
 
     public IList<int> GetRejectedArticle()
     {
         return
-            Redis
+            _redis
                 .SetMembers(RejectedArticles)
                 .ToList()
                 .Select(mem => int.Parse(mem.ToString()))
@@ -49,61 +51,61 @@ public class ArticleReviewService : IArticleReviewService
 
     public long GetRejectedArticleCount()
     {
-        return Redis.HashLength(RejectedArticles);
+        return _redis.HashLength(RejectedArticles);
     }
 
     public bool AddArticleToPendingReviewList(int articleId)
     {
-        Redis.HashDelete(RejectedArticles, articleId);
+        _redis.HashDelete(RejectedArticles, articleId);
 
-        return Redis.SetAdd(PendingArticles, articleId);
+        return _redis.SetAdd(PendingArticles, articleId);
     }
 
     public bool IsArticlePendingReview(int articleId)
     {
-        return Redis.SetContains(PendingArticles, articleId);
+        return _redis.SetContains(PendingArticles, articleId);
     }
 
     public void ApproveArticle(int articleId, int reviewerId)
     {
-        Redis.SetRemove(PendingArticles, articleId);
+        _redis.SetRemove(PendingArticles, articleId);
     }
 
     public void RejectArticle(int articleId, int reviewerId, string reasons)
     {
-        Redis.HashSet(RejectedArticles, articleId, reasons);
+        _redis.HashSet(RejectedArticles, articleId, reasons);
     }
 
     public bool IsArticleApproved(int articleId)
     {
-        return !Redis.SetContains(PendingArticles, articleId) 
-               && !Redis.HashExists(RejectedArticles, articleId);
+        return !_redis.SetContains(PendingArticles, articleId) 
+               && !_redis.HashExists(RejectedArticles, articleId);
     }
 
     public bool IsArticleRejected(int articleId)
     {
-        return Redis.HashExists(RejectedArticles, articleId);
+        return _redis.HashExists(RejectedArticles, articleId);
     }
 
     public int? ReviewArticle(int reviewerId)
     {
-        lock (Redis)
+        lock (_redis)
         {
-            var member = Redis.SetRandomMember(PendingArticles);
+            var member = _redis.SetRandomMember(PendingArticles);
             if (member.IsNull)
             {
                 return null;
             }
-            Redis.SetRemove(PendingArticles, member);
+            _redis.SetRemove(PendingArticles, member);
             var articleId = int.Parse(member.ToString());
-            Redis.StringSet(ProcessingArticles + articleId, reviewerId);
+            _redis.StringSet(ProcessingArticles + articleId, reviewerId);
             return articleId;
         }
     }
 
     public bool InReviewArticle(int articleId, int reviewerId)
     {
-        var processorId = Redis.StringGet(ProcessingArticles + articleId);
+        var processorId = _redis.StringGet(ProcessingArticles + articleId);
 
         if (processorId.IsNull)
         {
@@ -115,6 +117,6 @@ public class ArticleReviewService : IArticleReviewService
 
     public void CancelReview(int articleId)
     {
-        Redis.HashDeleteAsync(ProcessingArticles, articleId);
+        _redis.HashDeleteAsync(ProcessingArticles, articleId);
     }
 }
