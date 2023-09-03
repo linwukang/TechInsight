@@ -8,11 +8,11 @@ namespace TechInsight.Controllers;
 [Route("articles")]
 public class ArticleController : Controller
 {
-    public readonly IArticleService ArticleService;
+    private readonly IArticleService _articleService;
 
     public ArticleController(IArticleService articleService)
     {
-        ArticleService = articleService;
+        _articleService = articleService;
     }
 
     /// <summary>
@@ -28,7 +28,31 @@ public class ArticleController : Controller
     [HttpPost("publish-article")]
     public IActionResult PublishArticle([FromBody] PublishArticleDto article)
     {
-        var articleId = ArticleService.PublishArticle(article.UserId, article.Title, article.Content, article.Tags);
+        if (article.Title is null || article.Title.Length == 0)
+        {
+            return BadRequest(new
+            {
+                succeed = false,
+                message = "标题不能为空"
+            });
+        }
+        if (article.Content is null || article.Content.Length == 0)
+        {
+            return BadRequest(new
+            {
+                succeed = false,
+                message = "文章内容不能为空"
+            });
+        }
+        if (article.Tags is null || article.Tags.Count == 0)
+        {
+            return BadRequest(new
+            {
+                succeed = false,
+                message = "标签不能为空"
+            });
+        }
+        var articleId = _articleService.PublishArticle(article.UserId, article.Title, article.Content, article.Tags);
 
         if (articleId is null)
         {
@@ -46,10 +70,15 @@ public class ArticleController : Controller
         });
     }
 
-    [HttpPost("edit-article")]
+    /// <summary>
+    /// 编辑文章
+    /// </summary>
+    /// <param name="article"></param>
+    /// <returns></returns>
+    [HttpPut("edit-article")]
     public IActionResult EditArticle([FromBody] EditArticleDto article)
     {
-        var editResult = ArticleService.EditArticle(article.Id, article.Title, article.Content, article.Tags);
+        var editResult = _articleService.EditArticle(article.Id, article.Title, article.Content, article.Tags);
 
         return Ok(new
         {
@@ -75,7 +104,7 @@ public class ArticleController : Controller
             count = 20;
         }
 
-        var articles = ArticleService.GetArticlesOfSortedByPublicationTime(startIndex, count);
+        var articles = _articleService.GetArticlesOfSortedByPublicationTime(startIndex, count);
 
         return Ok(new
         {
@@ -97,17 +126,17 @@ public class ArticleController : Controller
     /// <summary>
     /// 通过 id 获取文章
     /// </summary>
-    /// <param name="id">文章 id</param>
+    /// <param name="articleId">文章 id</param>
     /// <returns>
     /// 获取成功:
     /// { article: Article }
     /// 获取失败:
     /// 404
     /// </returns>
-    [HttpGet("article")]
-    public IActionResult Article([FromQuery] int id)
+    [HttpGet("article/{articleId:int}")]
+    public IActionResult GetArticleById([FromRoute] int articleId)
     {
-        var article = ArticleService.GetById(id);
+        var article = _articleService.GetById(articleId);
         if (article is null)
         {
             return NotFound();
@@ -119,35 +148,6 @@ public class ArticleController : Controller
             title = article.Title,
             content = article.Content,
             publisherId = article.Publisher.Id
-        });
-    }
-
-    /// <summary>
-    /// 通过文章的 id 获取文章的评论，并分页返回
-    /// </summary>
-    /// <param name="id">文章 id</param>
-    /// <param name="pages">页数，从 0 开始计数</param>
-    /// <param name="size">每页评论的数量</param>
-    /// <returns></returns>
-    [HttpGet("comment-list")]
-    public IActionResult CommentList([FromQuery] int id, [FromQuery] int pages, [FromQuery] int size)
-    {
-        return Ok(new 
-        {
-            comments = ArticleService
-                .GetComments(id, pages, size)
-                .Select(comment => new
-                {
-                    id = comment.Id,
-                    profilePicture = comment.Publisher.UserProfile.ProfilePicture,
-                    userHome = "/user-home?userId=" + comment.Publisher.Id,
-                    username = comment.Publisher.UserName,
-                    publishDate = comment.PublicationDate,
-                    content = comment.Content,
-                    likes = comment.Likes,
-                    dislikes = comment.Dislikes,
-                })
-                .ToList()
         });
     }
 }

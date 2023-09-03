@@ -8,12 +8,12 @@ namespace TechInsight.Controllers;
 [Route("accounts")]
 public class AccountController : ControllerBase
 {
-    public readonly ILoginAccountService LoginAccountService;
-    public readonly ILogger<AccountController> Logger;
+    private readonly ILoginAccountService _loginAccountService;
+    private readonly ILogger<AccountController> _logger;
     public AccountController(ILoginAccountService loginAccountService, ILogger<AccountController> logger)
     {
-        LoginAccountService = loginAccountService;
-        Logger = logger;
+        _loginAccountService = loginAccountService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -27,8 +27,8 @@ public class AccountController : ControllerBase
     /// 登录失败返回:
     /// { logged = false, message: string }
     /// </returns>
-    [HttpGet("login")]
-    public IActionResult Login([FromQuery] string? username, [FromQuery] string? password)
+    [HttpPost("login/{username}")]
+    public IActionResult Login([FromRoute] string? username, [FromQuery] string? password)
     {
         if (username is null)
         {
@@ -48,10 +48,10 @@ public class AccountController : ControllerBase
             });
         }
 
-        var userAccountId = LoginAccountService.GetUserAccountId(username);
+        var userAccountId = _loginAccountService.GetUserAccountId(username);
         if (userAccountId is null)
         {
-            Logger.LogInformation($"login failure. username: {username}, password: {password}.");
+            _logger.LogInformation($"login failure. username: {username}, password: {password}.");
             return Ok(new
             {
                 logged = false,
@@ -59,7 +59,7 @@ public class AccountController : ControllerBase
             });
         }
 
-        if (LoginAccountService.Logged(username))
+        if (_loginAccountService.Logged(username))
         {
             return Ok(new
             {
@@ -68,11 +68,11 @@ public class AccountController : ControllerBase
             });
         }
 
-        var token = LoginAccountService.Login(username, password);
+        var token = _loginAccountService.Login(username, password);
 
         if (token is null)
         {
-            Logger.LogInformation($"login failure. username: {username}, password: {password}.");
+            _logger.LogInformation($"login failure. username: {username}, password: {password}.");
             return Ok(new
             {
                 logged = false,
@@ -80,7 +80,7 @@ public class AccountController : ControllerBase
             });
         }
 
-        Logger.LogInformation($"login successfully. username: {username}, password: {password}.");
+        _logger.LogInformation($"login successfully. username: {username}, password: {password}.");
         return Ok(new
         {
             logged = true,
@@ -101,10 +101,10 @@ public class AccountController : ControllerBase
     /// 用户已登录:
     /// { logged: true }
     /// </returns>
-    [HttpGet("logged")]
-    public IActionResult Logged([FromQuery] string username)
+    [HttpPost("logged/{username}")]
+    public IActionResult Logged([FromRoute] string username)
     {
-        var userId = LoginAccountService.GetUserAccountId(username);
+        var userId = _loginAccountService.GetUserAccountId(username);
         if (userId is null)
         {
             return Ok(new
@@ -114,7 +114,7 @@ public class AccountController : ControllerBase
             });
         }
 
-        if (LoginAccountService.Logged((int) userId))
+        if (_loginAccountService.Logged((int) userId))
         {
             return Ok(new
             {
@@ -141,10 +141,10 @@ public class AccountController : ControllerBase
     /// 登出失败:
     /// { logout: false }
     /// </returns>
-    [HttpGet("logout")]
-    public IActionResult Logout([FromQuery] int userId, [FromQuery] string token)
+    [HttpPost("logout/{userId:int}")]
+    public IActionResult Logout([FromRoute] int userId, [FromQuery] string token)
     {
-        if (!LoginAccountService.Logged(userId))
+        if (!_loginAccountService.Logged(userId))
         {
             // 账号未登录
             return Ok(new
@@ -154,9 +154,9 @@ public class AccountController : ControllerBase
             });
         }
 
-        if (LoginAccountService.Logout(userId, token))
+        if (_loginAccountService.Logout(userId, token))
         {
-            Logger.LogInformation($"Logout successfully. userId: {userId}.");
+            _logger.LogInformation($"Logout successfully. userId: {userId}.");
             // 登出成功
             return Ok(new
             {

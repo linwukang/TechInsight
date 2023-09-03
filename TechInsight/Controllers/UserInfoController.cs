@@ -7,39 +7,38 @@ namespace TechInsight.Controllers;
 [Route("user-info")]
 public class UserInfoController : Controller
 {
-    public readonly IUserInfoService UserInfoService;
-    public readonly ILogger<UserInfoController> Logger;
+    private readonly IUserInfoService _userInfoService;
+    private readonly ILogger<UserInfoController> _logger;
 
     public UserInfoController(IUserInfoService userInfoService, ILogger<UserInfoController> logger)
     {
-        UserInfoService = userInfoService;
-        Logger = logger;
+        _userInfoService = userInfoService;
+        _logger = logger;
     }
 
 
     [HttpGet]
     public IActionResult UserInfo([FromQuery] int id)
     {
-        var userName = UserInfoService.GetUserName(id);
-        var userProfile = UserInfoService.GetUserProfile(id);
+        var userName = _userInfoService.GetUserName(id);
+        var userProfile = _userInfoService.GetUserProfile(id);
 
-        if (userName is null || userProfile is null)
-        {
-            Logger.LogWarning($"User id {id} does not exist");
-            return NotFound(new
+        if (userName is not null && userProfile is not null)
+            return Ok(new
             {
-                message = "该用户不存在"
+                username = userName,
+                bio = userProfile.Bio,
+                dataOfBirth = userProfile.DateOfBirth,
+                gender = userProfile.Gender,
+                phoneNumber = userProfile.PhoneNumber,
+                profilePicture = userProfile.ProfilePicture
             });
-        }
-
-        return Ok(new
+        
+        _logger.LogWarning($"User id {id} does not exist");
+        return NotFound(new
         {
-            username = userName,
-            bio = userProfile.Bio,
-            dataOfBirth = userProfile.DateOfBirth,
-            gender = userProfile.Gender,
-            phoneNumber = userProfile.PhoneNumber,
-            profilePicture = userProfile.ProfilePicture
+            message = "该用户不存在"
         });
+
     }
 }
